@@ -11,6 +11,8 @@ import dns.tsig
 import dns.tsigkeyring
 import dns.update
 import zope.interface
+import socket
+import re
 
 from certbot import errors
 from certbot import interfaces
@@ -89,7 +91,10 @@ class _RFC2136Client(object):
     Encapsulates all communication with the target DNS server.
     """
     def __init__(self, server, key_name, key_secret, key_algorithm):
-        self.server = server
+        if re.match(r/[0-9]{1,3}(\.[0-9]{1,3}){3}|[0-9a-f]{1,4}(:[0-9a-f]{0,4}){1,7}/ ,server.lower() , re.I):
+            self.server = server
+        else:
+            self.server = socket.gethostbyname(server)
         self.keyring = dns.tsigkeyring.from_text({
             key_name: key_secret
         })
