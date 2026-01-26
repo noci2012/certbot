@@ -3,17 +3,10 @@ The `~certbot_dns_route53.dns_route53` plugin automates the process of
 completing a ``dns-01`` challenge (`~acme.challenges.DNS01`) by creating, and
 subsequently removing, TXT records using the Amazon Web Services Route 53 API.
 
-
-Named Arguments
----------------
-
-========================================  =====================================
-``--dns-route53-propagation-seconds``     The number of seconds to wait for DNS
-                                          to propagate before asking the ACME
-                                          server to verify the DNS record.
-                                          (Default: 10)
-========================================  =====================================
-
+.. note::
+   The plugin is not installed by default. It can be installed by heading to
+   `certbot.eff.org <https://certbot.eff.org/instructions#wildcard>`_, choosing your system and
+   selecting the Wildcard tab.
 
 Credentials
 -----------
@@ -108,13 +101,4 @@ Examples
      --dns-route53 \\
      -d example.com \\
      -d www.example.com
-
-.. code-block:: bash
-   :caption: To acquire a certificate for ``example.com``, waiting 30 seconds
-             for DNS propagation
-
-   certbot certonly \\
-     --dns-route53 \\
-     --dns-route53-propagation-seconds 30 \\
-     -d example.com
 """

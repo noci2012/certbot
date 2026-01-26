@@ -3,6 +3,10 @@ The `~certbot_dns_digitalocean.dns_digitalocean` plugin automates the process of
 completing a ``dns-01`` challenge (`~acme.challenges.DNS01`) by creating, and
 subsequently removing, TXT records using the DigitalOcean API.
 
+.. note::
+   The plugin is not installed by default. It can be installed by heading to
+   `certbot.eff.org <https://certbot.eff.org/instructions#wildcard>`_, choosing your system and
+   selecting the Wildcard tab.
 
 Named Arguments
 ---------------
@@ -72,6 +76,15 @@ Examples
      --dns-digitalocean-credentials ~/.secrets/certbot/digitalocean.ini \\
      -d example.com \\
      -d www.example.com
+
+.. code-block:: bash
+   :caption: To acquire a wildcard certificate for ``*.example.com``
+
+   certbot certonly \\
+     --dns-digitalocean \\
+     --dns-digitalocean-credentials ~/.secrets/certbot/digitalocean.ini \\
+     -d example.com \\
+     -d '*.example.com'
 
 .. code-block:: bash
    :caption: To acquire a certificate for ``example.com``, waiting 60 seconds

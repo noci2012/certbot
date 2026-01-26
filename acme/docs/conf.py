@@ -12,10 +12,8 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys
 import os
-import shlex
-
+import sys
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -39,10 +37,11 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
+    'sphinx_rtd_theme',
 ]
 
 autodoc_member_order = 'bysource'
-autodoc_default_flags = ['show-inheritance', 'private-members']
+autodoc_default_flags = ['show-inheritance']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -60,7 +59,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'acme-python'
-copyright = u'2015-2015, Let\'s Encrypt Project'
+copyright = u'2015, Let\'s Encrypt Project'
 author = u'Let\'s Encrypt Project'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -87,7 +86,9 @@ language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = [
+    '_build',
+]
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -114,7 +115,7 @@ pygments_style = 'sphinx'
 #keep_warnings = False
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = True
+todo_include_todos = False
 
 
 # -- Options for HTML output ----------------------------------------------
@@ -122,14 +123,7 @@ todo_include_todos = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 
-# http://docs.readthedocs.org/en/latest/theme.html#how-do-i-use-this-locally-and-on-read-the-docs
-# on_rtd is whether we are on readthedocs.org
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
-if not on_rtd:  # only import and set the theme if we're building docs locally
-    import sphinx_rtd_theme
-    html_theme = 'sphinx_rtd_theme'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-# otherwise, readthedocs.org uses their theme by default, so no need to specify it
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

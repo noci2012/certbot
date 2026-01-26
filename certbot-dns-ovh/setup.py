@@ -1,23 +1,34 @@
-from setuptools import setup
+import os
+import sys
+
 from setuptools import find_packages
+from setuptools import setup
 
+version = '2.12.0.dev0'
 
-version = '0.30.0.dev0'
-
-# Remember to update local-oldest-requirements.txt when changing the minimum
-# acme/certbot version.
 install_requires = [
-    'acme>=0.21.1',
-    'certbot>=0.21.1',
-    'dns-lexicon>=2.7.14', # Correct proxy use on OVH provider
-    'mock',
-    'setuptools',
-    'zope.interface',
+    'dns-lexicon>=3.15.1',
+    'setuptools>=41.6.0',
 ]
+
+if os.environ.get('SNAP_BUILD'):
+    install_requires.append('packaging')
+else:
+    install_requires.extend([
+        # We specify the minimum acme and certbot version as the current plugin
+        # version for simplicity. See
+        # https://github.com/certbot/certbot/issues/8761 for more info.
+        f'acme>={version}',
+        f'certbot>={version}',
+    ])
 
 docs_extras = [
     'Sphinx>=1.0',  # autodoc_member_order = 'bysource', autodoc_default_flags
     'sphinx_rtd_theme',
+]
+
+test_extras = [
+    'pytest',
 ]
 
 setup(
@@ -26,22 +37,22 @@ setup(
     description="OVH DNS Authenticator plugin for Certbot",
     url='https://github.com/certbot/certbot',
     author="Certbot Project",
-    author_email='client-dev@letsencrypt.org',
+    author_email='certbot-dev@eff.org',
     license='Apache License 2.0',
-    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
+    python_requires='>=3.8',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Plugins',
         'Intended Audience :: System Administrators',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Security',
         'Topic :: System :: Installation/Setup',
@@ -55,11 +66,11 @@ setup(
     install_requires=install_requires,
     extras_require={
         'docs': docs_extras,
+        'test': test_extras,
     },
     entry_points={
         'certbot.plugins': [
-            'dns-ovh = certbot_dns_ovh.dns_ovh:Authenticator',
+            'dns-ovh = certbot_dns_ovh._internal.dns_ovh:Authenticator',
         ],
     },
-    test_suite='certbot_dns_ovh',
 )

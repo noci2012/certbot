@@ -1,34 +1,37 @@
 """Validators to determine the current webserver configuration"""
 import logging
 import socket
-import requests
-import zope.interface
+from typing import cast
+from typing import Mapping
+from typing import Optional
+from typing import Union
 
-import six
-from six.moves import xrange  # pylint: disable=import-error,redefined-builtin
+from OpenSSL import crypto
+import requests
 
 from acme import crypto_util
 from acme import errors as acme_errors
-from certbot import interfaces
-
 
 logger = logging.getLogger(__name__)
 
 
-@zope.interface.implementer(interfaces.IValidator)
-class Validator(object):
-    # pylint: disable=no-self-use
+_VALIDATION_TIMEOUT = 10
+
+
+class Validator:
     """Collection of functions to test a live webserver's configuration"""
 
-    def certificate(self, cert, name, alt_host=None, port=443):
+    def certificate(self, cert: crypto.X509, name: Union[str, bytes],
+                    alt_host: Optional[str] = None, port: int = 443) -> bool:
         """Verifies the certificate presented at name is cert"""
         if alt_host is None:
-            host = socket.gethostbyname(name)
-        elif isinstance(alt_host, six.binary_type):
+            # In fact, socket.gethostbyname accepts both bytes and str, but types do not know that.
+            host = socket.gethostbyname(cast(str, name)).encode()
+        elif isinstance(alt_host, bytes):
             host = alt_host
         else:
             host = alt_host.encode()
-        name = name if isinstance(name, six.binary_type) else name.encode()
+        name = name if isinstance(name, bytes) else name.encode()
 
         try:
             presented_cert = crypto_util.probe_sni(name, host, port)
@@ -38,13 +41,17 @@ class Validator(object):
 
         return presented_cert.digest("sha256") == cert.digest("sha256")
 
-    def redirect(self, name, port=80, headers=None):
+    def redirect(self, name: str, port: int = 80,
+                 headers: Optional[Mapping[str, str]] = None) -> bool:
         """Test whether webserver redirects to secure connection."""
         url = "http://{0}:{1}".format(name, port)
         if headers:
-            response = requests.get(url, headers=headers, allow_redirects=False)
+            response = requests.get(url, headers=headers,
+                                    allow_redirects=False,
+                                    timeout=_VALIDATION_TIMEOUT)
         else:
-            response = requests.get(url, allow_redirects=False)
+            response = requests.get(url, allow_redirects=False,
+                                    timeout=_VALIDATION_TIMEOUT)
 
         redirect_location = response.headers.get("location", "")
         # We're checking that the redirect we added behaves correctly.
@@ -59,19 +66,24 @@ class Validator(object):
 
         return True
 
-    def any_redirect(self, name, port=80, headers=None):
+    def any_redirect(self, name: str, port: int = 80,
+                     headers: Optional[Mapping[str, str]] = None) -> bool:
         """Test whether webserver redirects."""
         url = "http://{0}:{1}".format(name, port)
         if headers:
-            response = requests.get(url, headers=headers, allow_redirects=False)
+            response = requests.get(url, headers=headers,
+                                    allow_redirects=False,
+                                    timeout=_VALIDATION_TIMEOUT)
         else:
-            response = requests.get(url, allow_redirects=False)
+            response = requests.get(url, allow_redirects=False,
+                                    timeout=_VALIDATION_TIMEOUT)
 
-        return response.status_code in xrange(300, 309)
+        return response.status_code in range(300, 309)
 
-    def hsts(self, name):
+    def hsts(self, name: str) -> bool:
         """Test for HTTP Strict Transport Security header"""
-        headers = requests.get("https://" + name).headers
+        headers = requests.get("https://" + name,
+                               timeout=_VALIDATION_TIMEOUT).headers
         hsts_header = headers.get("strict-transport-security")
 
         if not hsts_header:
@@ -98,6 +110,6 @@ class Validator(object):
 
         return True
 
-    def ocsp_stapling(self, name):
+    def ocsp_stapling(self, name: str) -> None:
         """Verify ocsp stapling for domain."""
         raise NotImplementedError()

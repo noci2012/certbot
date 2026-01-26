@@ -18,6 +18,7 @@
 #
 import os
 import sys
+
 sys.path.insert(0, os.path.abspath('_ext'))
 
 
@@ -35,10 +36,10 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
-    'jsonlexer']
+    'sphinx_rtd_theme']
 
 autodoc_member_order = 'bysource'
-autodoc_default_flags = ['show-inheritance', 'private-members']
+autodoc_default_flags = ['show-inheritance']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -84,7 +85,7 @@ default_role = 'py:obj'
 pygments_style = 'sphinx'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = True
+todo_include_todos = False
 
 
 # -- Options for HTML output ----------------------------------------------
@@ -93,14 +94,7 @@ todo_include_todos = True
 # a list of builtin themes.
 #
 
-# http://docs.readthedocs.org/en/latest/theme.html#how-do-i-use-this-locally-and-on-read-the-docs
-# on_rtd is whether we are on readthedocs.org
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
-if not on_rtd:  # only import and set the theme if we're building docs locally
-    import sphinx_rtd_theme
-    html_theme = 'sphinx_rtd_theme'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-# otherwise, readthedocs.org uses their theme by default, so no need to specify it
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -111,7 +105,7 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+#html_static_path = ['_static']
 
 
 # -- Options for HTMLHelp output ------------------------------------------
@@ -177,5 +171,5 @@ texinfo_documents = [
 intersphinx_mapping = {
     'python': ('https://docs.python.org/', None),
     'acme': ('https://acme-python.readthedocs.org/en/latest/', None),
-    'certbot': ('https://certbot.eff.org/docs/', None),
+    'certbot': ('https://eff-certbot.readthedocs.io/en/stable/', None),
 }
